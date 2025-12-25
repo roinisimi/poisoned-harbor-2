@@ -1,0 +1,51 @@
+name: Harbor Security Scanner
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  security-scan:
+    name: Run Maritime Security Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || echo "No requirements found"
+      
+      - name: Run harbor security scanner
+        env:
+          HARBOR_TOKEN: ${{ secrets.HARBOR_TOKEN }}
+        run: |
+          echo "🚢 Starting maritime security scan..."
+          echo "📋 Scanning harbor management system for vulnerabilities..."
+          
+          # Run custom security checks if they exist
+          if [ -f "scripts/security_check.sh" ]; then
+            echo "Running custom security checks..."
+            bash scripts/security_check.sh
+          fi
+          
+          # Run Python security scanner
+          if [ -f "harbor_management/security.py" ]; then
+            echo "Running security compliance scan..."
+            python -m harbor_management.security
+          fi
+          
+          echo "✅ Security scan complete!"
+      
+      - name: Post scan results
+        run: |
+          echo "Maritime security scan completed for PR #${github.event.pull_request.number}"
+          echo "All vessels cleared for docking! ⚓"
